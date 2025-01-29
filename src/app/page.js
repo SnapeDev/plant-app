@@ -17,18 +17,20 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center text-center text-white">
-      <h1 className="text-4xl font-bold mb-6">Welcome to Grow</h1>
+      <h1 className="text-4xl font-playfair font-bold text-black mb-6">
+        Welcome to Grow
+      </h1>
       <div className="space-x-4">
-        <Link href="/login">
+        {/* <Link href="/login">
           <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
             Login
           </button>
         </Link>
-        <Link href="/signup">
+        <Link href="/sign-up">
           <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
             Sign Up
           </button>
-        </Link>
+        </Link> */}
       </div>
     </div>
   );

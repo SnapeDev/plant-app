@@ -16,7 +16,6 @@ export const UserProvider = ({ children }) => {
     }
     setIsLoggedIn(true);
     setUser(userData);
-    console.log(userData);
   };
 
   const logout = () => {

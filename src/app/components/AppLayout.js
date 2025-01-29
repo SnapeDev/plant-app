@@ -7,13 +7,17 @@ import { useUser } from "../../../context/UserContext";
 export default function AppLayout({ children }) {
   const router = useRouter();
 
-  const { isLoggedIn, logout } = useUser();
+  const { isLoggedIn, logout, login } = useUser();
 
   // Check login status on initial mount and dynamically
   useEffect(() => {
     const checkLoginStatus = () => {
       const token = localStorage.getItem("token");
-      // setIsLoggedIn(true); // Update state based on token presence
+      const user = JSON.parse(localStorage.getItem("user"));
+
+      if (token && user) {
+        login(user); // Update state based on token presence
+      }
     };
 
     checkLoginStatus();
@@ -37,7 +41,9 @@ export default function AppLayout({ children }) {
     <div className="min-h-screen bg-gray-100 bg-plants bg-cover">
       <header className="bg-white text-black p-4 shadow-md">
         <nav className="flex justify-between">
-          <h1 className="text-3xl font-bold font-sans text-black">GROW</h1>
+          <h1 className="text-3xl font-bold text-gray-700 hover:text-green-800 font-playfair font-semibold">
+            GROW
+          </h1>
           <div className="space-x-4">
             {isLoggedIn ? (
               // Show when logged in
@@ -52,7 +58,7 @@ export default function AppLayout({ children }) {
               // Show when logged out
               <>
                 <Link href="/login">Login</Link>
-                <Link href="/signup">Sign Up</Link>
+                <Link href="/sign-up">Sign Up</Link>
               </>
             )}
           </div>

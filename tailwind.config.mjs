@@ -7,12 +7,17 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        poppins: ["Poppins", "sans-serif"],
+        playfair: ["Playfair Display", "serif"],
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
       backgroundImage: {
-        plants: "url('/plant.jpg')", // Path to your cloud image
+        plants: "url('/plant.jpg')",
+        pl: "url('/pl.jpg'",
       },
     },
   },
