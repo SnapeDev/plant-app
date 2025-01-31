@@ -18,6 +18,7 @@ export default function LoginPage() {
         "https://plant-app-backend-5cp1.onrender.com/api/auth/login",
         {
           method: "POST",
+
           headers: {
             "Content-Type": "application/json",
           },

@@ -55,7 +55,13 @@ export default function Dashboard() {
       }
 
       const updatedPlants = await fetch(
-        "https://plant-app-backend-5cp1.onrender.com/api/plants"
+        "https://plant-app-backend-5cp1.onrender.com/api/plants",
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+        }
       );
       const data = await updatedPlants.json();
       setPlants(data);
