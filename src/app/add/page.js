@@ -41,14 +41,17 @@ export default function AddPlant() {
 
           try {
             // Send the plant data to the backend
-            const response = await fetch("http://localhost:3001/api/plants", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: localStorage.getItem("token"),
-              },
-              body: JSON.stringify(plantData),
-            });
+            const response = await fetch(
+              "https://plant-app-backend-5cp1.onrender.com/api/plants",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: localStorage.getItem("token"),
+                },
+                body: JSON.stringify(plantData),
+              }
+            );
 
             if (!response.ok) {
               throw new Error("Failed to add plant");
