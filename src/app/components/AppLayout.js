@@ -44,7 +44,7 @@ export default function AppLayout({ children }) {
           <h1 className="text-3xl font-bold text-gray-700 hover:text-green-800 font-playfair font-semibold">
             GROW
           </h1>
-          <div className="space-x-4">
+          <div className="space-x-4 font-sans">
             {isLoggedIn ? (
               // Show when logged in
               <>

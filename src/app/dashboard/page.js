@@ -9,42 +9,54 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchPlants = async () => {
       try {
-        // Fetch plants from your backend (adjust the URL if needed)
-        const response = await fetch("http://localhost:3001/api/plants");
+        const response = await fetch(
+          "https://plant-app-backend-5cp1.onrender.com/api/plants",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: localStorage.getItem("token"),
+            },
+          }
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch plants");
         }
         const data = await response.json();
-        setPlants(data); // Set the fetched plants in state
+        setPlants(data);
       } catch (error) {
         console.error(error);
-        // Optionally, you can handle error state here
       }
     };
 
-    fetchPlants(); // Fetch the plants when the component is mounted
+    fetchPlants();
   }, []);
 
   // Handle watering a plant
   const handleWaterPlant = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/plants/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          needsWatering: false,
-          lastWatered: new Date().toISOString(),
-        }),
-      });
+      const response = await fetch(
+        `https://plant-app-backend-5cp1.onrender.com/api/plants/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+          body: JSON.stringify({
+            needsWatering: false,
+            lastWatered: new Date().toISOString(),
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to update plant");
       }
 
-      // After updating the plant, fetch the plants again to reflect the changes
-      const updatedPlants = await fetch("http://localhost:3001/api/plants");
+      const updatedPlants = await fetch(
+        "https://plant-app-backend-5cp1.onrender.com/api/plants"
+      );
       const data = await updatedPlants.json();
       setPlants(data);
       alert("Plant watered successfully!");
@@ -56,30 +68,58 @@ export default function Dashboard() {
   // Handle deleting a plant
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/plants/${id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `https://plant-app-backend-5cp1.onrender.com/api/plants/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to delete plant");
       }
 
-      // After deleting, fetch the updated plant list
-      const updatedPlants = await fetch("http://localhost:3001/api/plants");
+      const updatedPlants = await fetch(
+        "https://plant-app-backend-5cp1.onrender.com/api/plants",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
       const data = await updatedPlants.json();
+
       setPlants(data);
     } catch (error) {
       console.error(error);
     }
   };
 
-  // Helper function to calculate days ago
+  // Helper function to determine if a plant needs watering
+  const isOverdueForWatering = (plant) => {
+    if (!plant.lastWatered) return true;
+
+    const lastWateredDate = new Date(plant.lastWatered);
+    const today = new Date();
+    const differenceInDays = Math.floor(
+      (today - lastWateredDate) / (1000 * 3600 * 24)
+    );
+
+    return differenceInDays >= plant.wateringFrequency;
+  };
+
   const calculateDaysAgo = (dateString) => {
-    if (!dateString) return "Not yet watered"; // If no watering date exists
+    if (!dateString) return "Not yet watered";
     const lastWateredDate = new Date(dateString);
     const today = new Date();
     const differenceInTime = today - lastWateredDate;
-    const differenceInDays = Math.floor(differenceInTime / (1000 * 3600 * 24)); // Convert time difference to days
+    const differenceInDays = Math.floor(differenceInTime / (1000 * 3600 * 24));
     return differenceInDays === 0
       ? "Watered today"
       : `${differenceInDays} day${differenceInDays > 1 ? "s" : ""} ago`;
@@ -87,11 +127,13 @@ export default function Dashboard() {
 
   return (
     <div className="p-6">
-      <h2 className="text-3xl font-bold mb-8 text-center">My Plants</h2>
+      <h2 className="text-3xl font-bold mb-8 font-playfair text-center">
+        My Plants
+      </h2>
       <div className="flex justify-center space-x-6 overflow-x-auto pb-6">
         {plants.map((plant) => (
           <div
-            key={plant._id} // Use _id from MongoDB as the key
+            key={plant._id}
             className="flex flex-col items-center bg-white p-6 rounded-lg shadow-lg w-52"
           >
             <div
@@ -100,32 +142,32 @@ export default function Dashboard() {
             />
             <span className="mt-3 text-xl font-medium">{plant.name}</span>
 
-            {/* Last Watered Info with "days ago" */}
             <p className="text-sm text-gray-500 mt-2">
-              Last watered: {calculateDaysAgo(plant.lastWatered)}
+              Last watered:{" "}
+              {isOverdueForWatering(plant)
+                ? "Needs watering!"
+                : calculateDaysAgo(plant.lastWatered)}
             </p>
-
-            {/* Watering Frequency Info */}
             <p className="text-sm text-gray-500">
               Needs watering every {plant.wateringFrequency} days
             </p>
 
             <button
               className="mt-3 px-6 py-3 rounded text-black flex items-center gap-2"
-              disabled={!plant.needsWatering}
-              onClick={() => handleWaterPlant(plant._id)} // Use _id to identify the plant
+              disabled={!isOverdueForWatering(plant)}
+              onClick={() => handleWaterPlant(plant._id)}
             >
-              {plant.needsWatering ? (
-                <Droplet className="w-6 h-6 text-blue-600 fill-current" /> // Water icon
+              {isOverdueForWatering(plant) ? (
+                <Droplet className="w-6 h-6 text-blue-600 fill-current" />
               ) : (
-                <Leaf className="w-6 h-6 text-green-700 fill-current" /> // Plant icon
+                <Leaf className="w-6 h-6 text-green-700 fill-current" />
               )}
             </button>
             <button
               className="mt-3 px-6 py-3 text-black rounded flex items-center gap-2"
-              onClick={() => handleDelete(plant._id)} // Use _id for deleting the plant
+              onClick={() => handleDelete(plant._id)}
             >
-              <X className="w-6 h-6" /> {/* X icon for delete */}
+              <X className="w-6 h-6" />
             </button>
           </div>
         ))}

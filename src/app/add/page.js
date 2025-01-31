@@ -45,6 +45,7 @@ export default function AddPlant() {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                Authorization: localStorage.getItem("token"),
               },
               body: JSON.stringify(plantData),
             });
